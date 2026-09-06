@@ -1,0 +1,66 @@
+@import "leaflet/dist/leaflet.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0rem);
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #0B0F17;
+  color: #F8FAFC;
+  touch-action: manipulation;
+  overflow-x: hidden;
+}
+
+/* Leaflet Dark theme custom styling and strict z-index clamping */
+.leaflet-container {
+  background: #0B0F17 !important;
+  font-family: inherit;
+  z-index: 10 !important;
+}
+
+.leaflet-pane {
+  z-index: 10 !important;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 15 !important;
+}
+
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background: #121824 !important;
+  color: #F8FAFC !important;
+  border: 1px solid #26334D;
+  border-radius: 1rem !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+}
+
+.leaflet-popup-content {
+  margin: 10px 14px !important;
+  line-height: 1.4;
+}
+
+.leaflet-control-zoom a {
+  background-color: #121824 !important;
+  color: #F8FAFC !important;
+  border-color: #26334D !important;
+}

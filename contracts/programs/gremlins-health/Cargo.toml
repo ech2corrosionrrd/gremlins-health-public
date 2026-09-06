@@ -1,0 +1,25 @@
+[package]
+name = "gremlins-health"
+version = "0.1.0"
+description = "Gremlins Health Move-to-Earn Proof-of-Adventure Solana Program"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "gremlins_health"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+idl-build = ["anchor-lang/idl-build"]
+
+[dependencies]
+anchor-lang = "0.29.0"
+
+# mpl-bubblegum and spl-account-compression were listed here but never
+# imported - the program has no CPI into either. They are omitted until the
+# real compressed-NFT mint is implemented, so the dependency graph reflects
+# what the code actually does.

@@ -1,0 +1,38 @@
+# ---- Secrets (NEVER commit) ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+**/id.json
+**/*-keypair.json
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.db
+*.sqlite3
+
+# ---- Node ----
+node_modules/
+dist/
+.vite/
+npm-debug.log*
+
+# ---- Rust / Anchor ----
+target/
+.anchor/
+Cargo.lock
+
+# ---- Local service runner (start.bat / stop.bat) ----
+.run/
+logs/
+
+# ---- OS / IDE ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

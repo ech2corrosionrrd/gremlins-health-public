@@ -1,0 +1,27 @@
+name: Задача
+description: Нова можливість або технічна робота
+labels: ["task"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Мова обговорення — **українська**. Див.
+        [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md).
+  - type: textarea
+    id: goal
+    attributes:
+      label: Що треба зробити
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Навіщо
+      description: Причина цінніша за опис — вона переживає зміну реалізації.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Критерій готовності
+      description: Як зрозуміти, що зроблено. Бажано перевірювано.

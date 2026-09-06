@@ -1,0 +1,37 @@
+name: Баг
+description: Щось працює не так, як має
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Мова обговорення — **українська**. Див.
+        [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md).
+  - type: textarea
+    id: what
+    attributes:
+      label: Що сталося
+      description: Спостережувана поведінка проти очікуваної.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Як відтворити
+      description: Мінімальні кроки. Якщо є запит — наведіть curl.
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Логи / вивід
+      description: З `logs\` або з консолі. **Приберіть токени й секрети.**
+      render: text
+  - type: input
+    id: env
+    attributes:
+      label: Середовище
+      placeholder: "ENVIRONMENT=development, Windows 11, Python 3.12"

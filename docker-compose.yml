@@ -1,0 +1,89 @@
+# Local / single-host orchestration.
+# Secrets come from a .env file next to this one - see .env.example.
+# Nothing here is hardcoded, so this file is safe to commit.
+
+services:
+  # TimescaleDB / PostgreSQL 16
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: gremlins-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-gremlins_health}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # Not published to the host: only the backend needs to reach it.
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Redis for caching, rate limiting and task queues
+  redis:
+    image: redis:7-alpine
+    container_name: gremlins-redis
+    expose:
+      - "6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  # FastAPI backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gremlins-api
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      SECRET_KEY: ${SECRET_KEY:?set SECRET_KEY in .env}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@timescaledb:5432/${POSTGRES_DB:-gremlins_health}
+      REDIS_URL: redis://redis:6379/0
+      SOLANA_RPC_URL: ${SOLANA_RPC_URL:-https://api.devnet.solana.com}
+      SOLANA_NETWORK: ${SOLANA_NETWORK:-devnet}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_WEBAPP_URL: ${TELEGRAM_WEBAPP_URL:-http://localhost}
+      BACKEND_CORS_ORIGINS: ${BACKEND_CORS_ORIGINS:?set BACKEND_CORS_ORIGINS in .env}
+      # One nginx sits in front, so X-Forwarded-For has exactly one hop.
+      TRUSTED_PROXY_COUNT: 1
+    expose:
+      - "8000"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health',timeout=3).status==200 else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  # Telegram Mini App, served by nginx which also proxies /api to the backend.
+  # This is the only container published to the host.
+  tma-frontend:
+    build:
+      context: ./apps/telegram-mini-app
+      dockerfile: Dockerfile
+      args:
+        # Same-origin: nginx routes /api to the backend, so no CORS in prod.
+        VITE_API_URL: /api
+    container_name: gremlins-tma
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

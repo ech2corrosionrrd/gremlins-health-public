@@ -1,0 +1,4 @@
+# Порожні issue вимкнені: шаблони задають мову й мінімальний набір фактів.
+# Про вразливості — не сюди, а за процедурою з SECURITY.md
+# (GitHub показує її кнопкою «Report a vulnerability»).
+blank_issues_enabled: false

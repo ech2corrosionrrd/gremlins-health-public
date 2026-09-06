@@ -1,0 +1,31 @@
+[Unit]
+Description=Gremlins Health Telegram Bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Never root: create the account first with
+#   useradd --system --home /var/www/gremlins-health --shell /usr/sbin/nologin gremlins
+User=gremlins
+Group=gremlins
+WorkingDirectory=/var/www/gremlins-health/backend
+EnvironmentFile=/var/www/gremlins-health/backend/.env
+ExecStart=/var/www/gremlins-health/backend/.venv/bin/python -m app.bot.bot
+Restart=always
+RestartSec=5
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ReadWritePaths=/var/www/gremlins-health/backend
+
+[Install]
+WantedBy=multi-user.target
